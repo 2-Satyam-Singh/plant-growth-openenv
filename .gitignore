@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+ENV/
+
+# OpenEnv / build files
+outputs/
+*.egg-info/
+build/
+dist/
+uv.lock
+
+# Logs and temporary files
+*.log
+baseline_results.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
