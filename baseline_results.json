@@ -1,29 +1,60 @@
 {
-  "agent": "rule_based",
+  "agent": "rule",
+  "model": "rule_based",
   "results": [
     {
       "task_id": "seedling_vigor",
       "episode": 1,
-      "final_score": 0.6746,
-      "total_reward": 1.8885,
-      "final_height_cm": 55.05,
-      "final_yield_t_ha": 0.0
+      "agent": "rule",
+      "steps": 5,
+      "final_day": 35,
+      "score": 0.654,
+      "total_reward": 1.7474,
+      "final_height_cm": 48.08,
+      "final_leaf_count": 3,
+      "final_fruit_count": 0,
+      "fruit_weight_g": 0.0,
+      "marketable_yield_t_ha": 0.0,
+      "ber_pct": 0.0,
+      "water_m3_ha": 441.74,
+      "iwue_kg_m3": 0.0,
+      "substrate": "rice_husk"
     },
     {
       "task_id": "maximize_yield",
       "episode": 1,
-      "final_score": 0.0007,
-      "total_reward": 1.1956,
-      "final_height_cm": 103.32,
-      "final_yield_t_ha": 0.0713
+      "agent": "rule",
+      "steps": 18,
+      "final_day": 120,
+      "score": 0.0692,
+      "total_reward": 1.0042,
+      "final_height_cm": 92.94,
+      "final_leaf_count": 3,
+      "final_fruit_count": 0,
+      "fruit_weight_g": 205.38,
+      "marketable_yield_t_ha": 6.8653,
+      "ber_pct": 5.985,
+      "water_m3_ha": 1601.2,
+      "iwue_kg_m3": 4.2876,
+      "substrate": "rice_husk"
     },
     {
       "task_id": "efficient_farmer",
       "episode": 1,
-      "final_score": 0.3431,
-      "total_reward": 0.3575,
-      "final_height_cm": 95.99,
-      "final_yield_t_ha": 0.0553
+      "agent": "rule",
+      "steps": 18,
+      "final_day": 120,
+      "score": 0.4292,
+      "total_reward": -0.2705,
+      "final_height_cm": 88.24,
+      "final_leaf_count": 3,
+      "final_fruit_count": 0,
+      "fruit_weight_g": 193.2,
+      "marketable_yield_t_ha": 6.4069,
+      "ber_pct": 6.734,
+      "water_m3_ha": 1431.75,
+      "iwue_kg_m3": 4.4749,
+      "substrate": "rice_husk"
     }
   ]
 }

@@ -266,11 +266,14 @@ class PlantGrowthEnvironment(Environment):
             daily_gdd = self._calc_gdd(temp)
 
             # ── Update soil moisture ───────────────────────────────────────
-            et_daily = 0.018 + 0.004 * (light / 10.0)  # evapotranspiration
-            water_added = action.irrigation_fraction * (WEEKLY_IRRIFRAME_M3_HA / 7) / 1000  # normalised 0-1 scale
+            # ET increases with light and plant size
+            et_daily = 0.018 + 0.004 * (light / 10.0) + 0.0002 * obs.plant_height_cm
+            # Convert m3/ha irrigation → soil moisture units (field capacity ~200mm = 0-1 scale)
+            # 191 m3/ha/week = 19.1 mm/week = 2.73 mm/day; field capacity ~200mm → +0.0137/day
+            water_added = action.irrigation_fraction * 0.0137 * sub["water_retention"]
             soil_moisture = max(
                 0.0,
-                min(1.0, obs.soil_moisture - et_daily + water_added * sub["water_retention"]),
+                min(1.0, obs.soil_moisture - et_daily + water_added),
             )
             accumulated_water += action.irrigation_fraction * (WEEKLY_IRRIFRAME_M3_HA / 7)
 
@@ -319,27 +322,32 @@ class PlantGrowthEnvironment(Environment):
             new_girth  = min(2.0,   obs.stem_girth_cm + dg)
 
             # ── Fruit development ──────────────────────────────────────────
-            new_fruit_count  = obs.fruit_count
-            new_fruit_weight = obs.fruit_weight_g
-            new_ber          = obs.blossom_end_rot_fraction
+            # Use a float accumulator for fruit count so it doesn't truncate to 0
+            new_fruit_count_f = float(obs.fruit_count)
+            new_fruit_weight  = obs.fruit_weight_g
+            new_ber           = obs.blossom_end_rot_fraction
 
             if stage == "fruiting":
-                # Fruit set rate from paper range 14-38 fruits / plant over ~70 days
+                # Fruit set: 14-38 fruits/plant over ~70 days (Olubanjo & Lanki papers)
+                # Rate ≈ 0.40/day at optimal → 28 fruits over 70 days
                 fruit_set_rate = 0.40 * stress_factor * sub["yield_mult"]
-                new_fruit_count = min(40, obs.fruit_count + fruit_set_rate)
+                new_fruit_count_f = min(40.0, new_fruit_count_f + fruit_set_rate)
 
-                # Weight accumulation per fruit per day (max ~420 g / plant)
-                if new_fruit_count > 0:
-                    weight_per_fruit_rate = 4.5 * stress_factor
-                    new_fruit_weight = min(
-                        new_fruit_count * 430,
-                        obs.fruit_weight_g + weight_per_fruit_rate * new_fruit_count * 0.08,
-                    )
+                # Weight accumulation: target 410 g/plant total at I100 over 70 days
+                # = 5.86 g/plant/day at optimal. Modulated by stress and substrate.
+                # (Olubanjo & Alade, 2018: rice_husk 410.6g, soil 368.2g per plant)
+                daily_weight_gain = 5.86 * stress_factor * sub["yield_mult"]
+                new_fruit_weight = min(
+                    430.0 * sub["yield_mult"],   # hard cap per plant
+                    obs.fruit_weight_g + daily_weight_gain,
+                )
 
-                # BER increases with water stress (Ca deficiency, from [2])
-                # I100 = 1.94%, I60 = 6.29%, I30 = 15.83%
+                # BER increases with water stress (Ca deficiency)
+                # I100=1.94%, I60=6.29%, I30=15.83% (Galaverni et al., 2025)
                 ber_increase = 0.002 * water_stress ** 2
                 new_ber = min(1.0, obs.blossom_end_rot_fraction + ber_increase)
+
+            new_fruit_count = int(new_fruit_count_f)
 
             # ── Marketable yield estimate ──────────────────────────────────
             # Scale plant-level to ha level (35,556 plants/ha @ 75×75 cm spacing)
