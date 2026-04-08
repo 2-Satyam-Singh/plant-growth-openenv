@@ -1,0 +1,104 @@
+name: plant_growth
+version: "1.0.0"
+description: >
+  Tomato plant growth simulation for reinforcement learning.
+  An agent manages a 120-day tomato (Solanum lycopersicum) season
+  by choosing weekly irrigation and fertilization strategies.
+  Grounded in real agronomic research data across substrate types,
+  irrigation regimes, and nutrient management practices.
+
+authors:
+    email: wizsaty@gmail.com, naruto3ayanakoji@gmail.com
+
+tags:
+  - agriculture
+  - tomato
+  - plant-growth
+  - irrigation
+  - water-efficiency
+  - real-world
+  - openenv
+
+tasks:
+  - id: seedling_vigor
+    name: "Seedling Vigor (Easy)"
+    description: >
+      Maximize plant height and leaf count at day 30.
+      Agent must balance watering and nutrients during the seedling stage.
+      Score = 0.6×(height/35cm) + 0.3×(leaves/50) + 0.1×(1−stress).
+    difficulty: easy
+    max_steps: 5
+    score_range: [0.0, 1.0]
+
+  - id: maximize_yield
+    name: "Maximize Fruit Yield (Medium)"
+    description: >
+      Run a full 120-day season. Maximize marketable fruit yield (t/ha).
+      Agent must transition strategy across seedling, flowering, and fruiting stages.
+      Reference: I100 regime = 99.27 t/ha (Galaverni et al., 2025).
+    difficulty: medium
+    max_steps: 18
+    score_range: [0.0, 1.0]
+
+  - id: efficient_farmer
+    name: "Efficient Farmer (Hard)"
+    description: >
+      Maximize Irrigation Water Use Efficiency (IWUE = kg marketable yield / m³ water)
+      while keeping BER (blossom end rot) below 10% and marketable fraction above 70%.
+      Score = 50%×IWUE + 30%×marketable_fraction + 20%×low_BER.
+      Optimal deficit irrigation (60% regime) should achieve IWUE ≈ 29 kg/m³.
+    difficulty: hard
+    max_steps: 18
+    score_range: [0.0, 1.0]
+
+action_space:
+  type: composite
+  fields:
+    - name: irrigation_fraction
+      type: float
+      range: [0.0, 1.0]
+      description: Fraction of recommended weekly irrigation to apply
+    - name: fertilizer_amount
+      type: float
+      range: [0.0, 1.0]
+      description: Fraction of maximum recommended fertilizer dose
+    - name: fertilizer_type
+      type: categorical
+      choices: [none, inorganic, organic, combined]
+      description: Type of fertilizer applied this week
+    - name: substrate_type
+      type: categorical
+      choices: [soil, sawdust, rice_husk]
+      description: Growing substrate (locked after episode start)
+
+observation_space:
+  type: composite
+  fields:
+    - {name: day,                       type: int,   description: "Current day (0-120)"}
+    - {name: growth_stage,              type: str,   description: "seedling/flowering/fruiting"}
+    - {name: plant_height_cm,           type: float, description: "Plant height in cm"}
+    - {name: leaf_count,                type: int,   description: "Number of leaves"}
+    - {name: stem_girth_cm,             type: float, description: "Stem girth in cm"}
+    - {name: fruit_count,               type: int,   description: "Fruits per plant"}
+    - {name: fruit_weight_g,            type: float, description: "Total fruit weight g/plant"}
+    - {name: marketable_yield_t_ha,     type: float, description: "Marketable yield t/ha"}
+    - {name: blossom_end_rot_fraction,  type: float, description: "BER fraction 0-1"}
+    - {name: soil_moisture,             type: float, description: "Soil moisture 0-1"}
+    - {name: temperature_c,             type: float, description: "Temperature °C"}
+    - {name: light_intensity_klux,      type: float, description: "Light klux"}
+    - {name: nutrient_level,            type: float, description: "Composite nutrient 0-1"}
+    - {name: water_stress_index,        type: float, description: "Water stress 0-1"}
+    - {name: chlorophyll_spad,          type: float, description: "SPAD index"}
+    - {name: accumulated_gdd,           type: float, description: "GDD accumulated"}
+    - {name: accumulated_tep,           type: float, description: "TEP accumulated MJ/m²"}
+    - {name: total_water_applied_m3_ha, type: float, description: "Total water m³/ha"}
+    - {name: iwue_kg_m3,                type: float, description: "IWUE kg/m³"}
+    - {name: substrate,                 type: str,   description: "Active substrate"}
+
+scientific_references:
+  - "Olubanjo & Alade (2018) — Substrate culture effects on tomato"
+  - "Galaverni et al. (2025) — IoT-based irrigation study, Computers & Electronics in Agriculture"
+  - "Lanki et al. (2023) — Organic vs conventional farming comparison"
+  - "Sabarinath et al. (2020) — Bio-inoculants and inorganic fertilizers in tomato"
+  - "Sun et al. (2021) — TEP-based weight distribution model, J. Taibah Univ. Sci."
+  - "White et al. (2022) — Functional-structural plant modelling, J. Digital Landscape Arch."

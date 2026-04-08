@@ -1,0 +1,29 @@
+{
+  "agent": "rule_based",
+  "results": [
+    {
+      "task_id": "seedling_vigor",
+      "episode": 1,
+      "final_score": 0.6746,
+      "total_reward": 1.8885,
+      "final_height_cm": 55.05,
+      "final_yield_t_ha": 0.0
+    },
+    {
+      "task_id": "maximize_yield",
+      "episode": 1,
+      "final_score": 0.0007,
+      "total_reward": 1.1956,
+      "final_height_cm": 103.32,
+      "final_yield_t_ha": 0.0713
+    },
+    {
+      "task_id": "efficient_farmer",
+      "episode": 1,
+      "final_score": 0.3431,
+      "total_reward": 0.3575,
+      "final_height_cm": 95.99,
+      "final_yield_t_ha": 0.0553
+    }
+  ]
+}
